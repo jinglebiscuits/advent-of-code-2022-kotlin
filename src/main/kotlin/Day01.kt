@@ -1,15 +1,14 @@
+import Util.TopThreeList
 import java.io.File
 
 class Day01 {
     var tempTotal = 0
-    var answer = 0
+    val topThreeList = TopThreeList()
 
     init {
         File(javaClass.getResource("inputs/1a.txt").toURI()).readLines().map {
             if (it.isEmpty()) {
-                if (tempTotal > answer) {
-                    answer = tempTotal
-                }
+                topThreeList.add(tempTotal)
                 tempTotal = 0
             } else {
                 tempTotal += it.toInt()
@@ -18,6 +17,7 @@ class Day01 {
     }
 
     fun main(args: Array<String>) {
-        println(answer)
+        println(topThreeList.first())
+        println(topThreeList.sum())
     }
 }
