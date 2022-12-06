@@ -6,19 +6,29 @@ class Day05 {
 
     init {
         File(javaClass.getResource("inputs/day5input.txt").toURI()).readLines().map {
-            println(it)
-            if (it.trim().length > 1 && it.trim()[0] == '[') {
-                processCratePositionLine(it)
-            } else if (it.startsWith("move")) {
-                processRearrangementProcedure(it)
-            }
+            part2(it)
         }
-        println(stacks)
         var answer = ""
         for (deque in stacks) {
             answer += deque.last()
         }
         println("answer = $answer")
+    }
+
+    private fun part1(line: String) {
+        if (line.trim().length > 1 && line.trim()[0] == '[') {
+            processCratePositionLine(line)
+        } else if (line.startsWith("move")) {
+            processRearrangementProcedure9000(line)
+        }
+    }
+
+    private fun part2(line: String) {
+        if (line.trim().length > 1 && line.trim()[0] == '[') {
+            processCratePositionLine(line)
+        } else if (line.startsWith("move")) {
+            processRearrangementProcedure9001(line)
+        }
     }
 
     private fun processCratePositionLine(line: String) {
@@ -34,12 +44,21 @@ class Day05 {
         }
     }
 
-    private fun processRearrangementProcedure(line: String) {
+    private fun processRearrangementProcedure9000(line: String) {
         val procedure = line.split(" ").filter { it.toIntOrNull() != null }
         for (i in 0 until procedure[0].toInt()) {
             val crate = stacks[procedure[1].toInt() - 1].removeLast()
             stacks[procedure[2].toInt() - 1].addLast(crate)
         }
+    }
+
+    private fun processRearrangementProcedure9001(line: String) {
+        val procedure = line.split(" ").filter { it.toIntOrNull() != null }
+        val crates = mutableListOf<Char>()
+        for (i in 0 until procedure[0].toInt()) {
+            crates.add(0, stacks[procedure[1].toInt() - 1].removeLast())
+        }
+        stacks[procedure[2].toInt() - 1].addAll(crates)
     }
 
     private fun createStacks(numberOfStacks: Int) {
