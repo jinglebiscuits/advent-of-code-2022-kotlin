@@ -4,11 +4,14 @@ class Day06 {
 
     init {
         File(javaClass.getResource("inputs/day6input.txt").toURI()).readLines().map {
-            part1(it)
+            println("part1")
+            decodeSignal(it, 4) // part1
+            println("part2")
+            decodeSignal(it, 14) //part2
         }
     }
 
-    private fun part1(line: String) {
+    private fun decodeSignal(line: String, distinctCharactersNeeded: Int) {
         var startOfPacketMarker = mutableListOf<Char>()
         var count = 0
         var markerFound = false
@@ -17,7 +20,7 @@ class Day06 {
             count += 1
             if (char !in startOfPacketMarker) {
                 startOfPacketMarker.add(char)
-                if (startOfPacketMarker.size == 4) {
+                if (startOfPacketMarker.size == distinctCharactersNeeded) {
                     markerFound = true
                 }
             } else {
