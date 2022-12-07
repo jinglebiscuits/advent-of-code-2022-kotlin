@@ -9,21 +9,28 @@ class Day07 {
         directories["/"] = Directory("/", null)
         currentDirectory = directories["/"]!!
         File(javaClass.getResource("inputs/day7input.txt").toURI()).readLines().map {
-            part1(it)
+            if (it.startsWith("$")) {
+                processCommand(it)
+            } else {
+                processOutput(it)
+            }
         }
+        part1()
+        part2()
+    }
+
+    private fun part1() {
         println("answer " + directories.values.filter { it.getSize() <= 100000 }.sumOf { it.getSize() })
     }
 
-    private fun part1(line: String) {
-        if (line.startsWith("$")) {
-            processCommand(line)
-        } else {
-            processOutput(line)
-        }
-    }
-
-    private fun part2(line: String) {
-
+    private fun part2() {
+        val totalSpace = 70000000
+        val spaceForUpdate = 30000000
+        val usedSpace = directories["/"]?.getSize() ?: 0
+        val neededSpace = usedSpace + spaceForUpdate - totalSpace
+        val sorted = directories.values.sortedBy { it.getSize() }
+        val first = sorted.first { it.getSize() >= neededSpace }
+        println(first.getSize())
     }
 
     private fun processCommand(line: String) {
