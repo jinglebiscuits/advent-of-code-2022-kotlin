@@ -5,7 +5,7 @@ class Day08 {
     val rows = mutableListOf<MutableList<Int>>()
 
     init {
-        File(javaClass.getResource("inputs/day8input_test.txt").toURI()).readLines().map {
+        File(javaClass.getResource("inputs/day8input.txt").toURI()).readLines().map {
             rows.add(mutableListOf())
             it.map { char -> rows.last().add(char.digitToInt()) }
         }
@@ -53,17 +53,24 @@ class Day08 {
 
     private fun getScenicScoreFor(rowPos: Int, columnPos: Int): Int {
         val leftTrees = rows[rowPos].subList(0, columnPos).reversed()
-        val rightTrees = rows[rowPos].subList(columnPos, rows[rowPos].size)
+        val rightTrees = if (columnPos == rows[rowPos].size - 1) emptyList() else (rows[rowPos].subList(columnPos + 1, rows[rowPos].size))
         val column = getColumnFor(columnPos)
         val topTrees = column.subList(0, rowPos).reversed()
-        val botTrees = column.subList(rowPos, column.size)
-        val leftScore = leftTrees
-            .map { if (it <= rows[rowPos][columnPos]) 1 else 0 }
-            .also { println(it) }
-            .takeWhile { it == 1 }
-            .also { println(it) }
-            .sum()
-        println("$rowPos $columnPos $leftScore")
+        val botTrees = if (rowPos == rows.size -1) emptyList() else (column.subList(rowPos + 1, column.size))
+        val leftScore = getDirectionalScore(rows[rowPos][columnPos], leftTrees)
+        val rightScore = getDirectionalScore(rows[rowPos][columnPos], rightTrees)
+        val topScore = getDirectionalScore(rows[rowPos][columnPos], topTrees)
+        val botScore = getDirectionalScore(rows[rowPos][columnPos], botTrees)
+        return leftScore*rightScore*topScore*botScore
+    }
+
+    private fun getDirectionalScore(treeHeight: Int, trees: List<Int>) : Int {
+        var leftScore = if (trees.isEmpty()) -2 else trees
+            .indexOfFirst { it >= treeHeight } + 1
+        when (leftScore) {
+            -2 -> leftScore = 0
+            0 -> leftScore = trees.size
+        }
         return leftScore
     }
 
