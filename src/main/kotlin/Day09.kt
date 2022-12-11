@@ -49,21 +49,25 @@ class Day09 {
 
     private fun moveUp() {
         knots[0].y += 1
+        visualize()
         moveKnots()
     }
 
     private fun moveDown() {
         knots[0].y -= 1
+        visualize()
         moveKnots()
     }
 
     private fun moveLeft() {
         knots[0].x -= 1
+        visualize()
         moveKnots()
     }
 
     private fun moveRight() {
         knots[0].x += 1
+        visualize()
         moveKnots()
     }
 
@@ -72,9 +76,10 @@ class Day09 {
             val result = moveKnot(knots[i], knots[i-1])
             knots[i].x = result.x
             knots[i].y = result.y
+            visualize()
         }
         if (!tailLocation.contains(knots.last())) {
-            tailLocation.add(knots.last())
+            tailLocation.add(Point(knots.last().x, knots.last().y))
             file.appendText("adding ${knots.last()} to list\n")
         }
     }
@@ -113,6 +118,30 @@ class Day09 {
             }
         }
         return result
+    }
+
+    private fun visualize() {
+        return
+        val grid = mutableListOf<MutableList<String>>()
+        for (i in 0 until 50) {
+            val row = mutableListOf<String>()
+            for (j in 0 until 50) {
+                row.add(".")
+            }
+            grid.add(row)
+        }
+        for (i in knots.indices) {
+            grid[knots[i].y + 25][knots[i].x + 25] = i.toString()
+        }
+        for (point in tailLocation) {
+            grid[point.y + 25][point.x + 25] = "#"
+        }
+        grid[25][25] = "s"
+        for (row in grid.reversed()) {
+            println(row)
+        }
+        println("\n\n")
+        Thread.sleep(25)
     }
 }
 
