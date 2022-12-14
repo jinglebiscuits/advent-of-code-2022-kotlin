@@ -5,7 +5,8 @@ class Day12 {
     val nodes = mutableSetOf<Node>()
     val locations = mutableListOf<Location>()
     val visitedLocations = mutableSetOf<Location>()
-    var goal: Location = Location(0, 0, 0)
+    var start: Location = Location(0, 0, 'a')
+    var goal: Location = Location(0, 0, 'a')
     var goalNode: Node? = null
     var gridSize = Pair(0, 0)
     var nodesToProcess = mutableListOf<Node>()
@@ -18,12 +19,13 @@ class Day12 {
             x = 0
             for (char in it) {
                 if (char == 'S') {
-                    locations.add(Location(x, y, 'a'.code))
+                    locations.add(Location(x, y, 'a'))
+                    start = Location(x, y, 'a')
                 } else if (char == 'E') {
-                    locations.add(Location(x, y, 'z'.code))
-                    goal = Location(x, y, 'z'.code)
+                    locations.add(Location(x, y, 'z'))
+                    goal = Location(x, y, 'z')
                 } else {
-                    locations.add(Location(x, y, char.code))
+                    locations.add(Location(x, y, char))
                 }
                 x++
             }
@@ -34,7 +36,7 @@ class Day12 {
     }
 
     private fun part1() {
-        val start = Node(locations[0], null)
+        val start = Node(start, null)
         nodes.add(start)
         nodesToProcess.add(start)
         while (nodesToProcess.isNotEmpty()) {
@@ -54,7 +56,6 @@ class Day12 {
             }
         }
         println("end")
-        println(nodes)
         var steps = 0
         goalNode?.let {
             var parent = it.parentNode
@@ -64,6 +65,28 @@ class Day12 {
             }
         }
         println("answer $steps")
+        visualize()
+    }
+
+    private fun visualize() {
+        var viz = ""
+        val list = mutableListOf<Location>()
+        var parent = goalNode!!.parentNode
+        while (parent != null) {
+            list.add(parent.location)
+            parent = parent.parentNode
+        }
+        for (i in 0 until locations.size) {
+            if (i % gridSize.first == 0) {
+                viz += "\n"
+            }
+            if (list.contains(locations[i])) {
+                viz += "#"
+            } else {
+                viz += locations[i].height
+            }
+        }
+        println(viz)
     }
 }
 
@@ -105,9 +128,9 @@ class Node(val location: Location, val parentNode: Node?) {
 
     private fun isChildLocationAccessible(location: Location): Boolean {
         return if (parentNode != null) {
-            location != parentNode.location && (location.height <= this.location.height + 1)
+            location != parentNode.location && (location.height.code <= this.location.height.code + 1)
         } else {
-            location.height <= this.location.height + 1
+            location.height.code <= this.location.height.code + 1
         }
     }
 
@@ -148,4 +171,4 @@ class Node(val location: Location, val parentNode: Node?) {
     }
 }
 
-data class Location(val posX: Int, val posY: Int, val height: Int)
+data class Location(val posX: Int, val posY: Int, val height: Char)
