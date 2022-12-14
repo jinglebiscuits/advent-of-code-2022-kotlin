@@ -4,6 +4,7 @@ class Day12 {
 
     val nodes = mutableSetOf<Node>()
     val locations = mutableListOf<Location>()
+    val visitedLocations = mutableSetOf<Location>()
     var goal: Location = Location(0, 0, 0)
     var goalNode: Node? = null
     var gridSize = Pair(0, 0)
@@ -12,7 +13,7 @@ class Day12 {
     init {
         var y = 0
         var x = 0
-        File(javaClass.getResource("inputs/day12input_test.txt").toURI()).readLines().map {
+        File(javaClass.getResource("inputs/day12input.txt").toURI()).readLines().map {
             println(it)
             x = 0
             for (char in it) {
@@ -37,11 +38,14 @@ class Day12 {
         nodes.add(start)
         nodesToProcess.add(start)
         while (nodesToProcess.isNotEmpty()) {
-            val list = nodesToProcess.removeFirst().getChildren(locations, gridSize)
-            val prunedList = list.filter { !nodesToProcess.contains(it) }
+            val tempNode = nodesToProcess.removeFirst()
+            val list = tempNode.getChildren(locations, gridSize)
+            val prunedList = list.filter { !visitedLocations.contains(it.location) }
             nodesToProcess.addAll(prunedList)
+            visitedLocations.addAll(list.map { it.location })
             nodes.addAll(list)
-            for (node in list) {
+            println("tempNode ${tempNode.location}")
+            for (node in prunedList) {
                 println("${node.location.posX}, ${node.location.posY}")
                 if (node.location.posX == goal.posX && node.location.posY == goal.posY) {
                     nodesToProcess.clear()
@@ -111,7 +115,7 @@ class Node(val location: Location, val parentNode: Node?) {
         if (location.posY == 0) {
             throw IndexOutOfBoundsException("no no")
         } else {
-            return indexFromPosition(location.posX, location.posY - gridSize.first, gridSize)
+            return indexFromPosition(location.posX, location.posY - 1, gridSize)
         }
     }
 
