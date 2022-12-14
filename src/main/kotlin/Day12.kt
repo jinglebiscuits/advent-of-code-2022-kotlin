@@ -6,6 +6,7 @@ class Day12 {
     val locations = mutableListOf<Location>()
     val visitedLocations = mutableSetOf<Location>()
     var start: Location = Location(0, 0, 'a')
+    var startLocations = mutableListOf<Location>()
     var goal: Location = Location(0, 0, 'a')
     var goalNode: Node? = null
     var gridSize = Pair(0, 0)
@@ -15,15 +16,18 @@ class Day12 {
         var y = 0
         var x = 0
         File(javaClass.getResource("inputs/day12input.txt").toURI()).readLines().map {
-            println(it)
             x = 0
             for (char in it) {
                 if (char == 'S') {
                     locations.add(Location(x, y, 'a'))
                     start = Location(x, y, 'a')
+                    startLocations.add(Location(x, y, 'a'))
                 } else if (char == 'E') {
                     locations.add(Location(x, y, 'z'))
                     goal = Location(x, y, 'z')
+                } else if (char == 'a') {
+                    locations.add(Location(x, y, char))
+                    startLocations.add(Location(x, y, char))
                 } else {
                     locations.add(Location(x, y, char))
                 }
@@ -36,36 +40,43 @@ class Day12 {
     }
 
     private fun part1() {
-        val start = Node(start, null)
-        nodes.add(start)
-        nodesToProcess.add(start)
-        while (nodesToProcess.isNotEmpty()) {
-            val tempNode = nodesToProcess.removeFirst()
-            val list = tempNode.getChildren(locations, gridSize)
-            val prunedList = list.filter { !visitedLocations.contains(it.location) }
-            nodesToProcess.addAll(prunedList)
-            visitedLocations.addAll(list.map { it.location })
-            nodes.addAll(list)
-            println("tempNode ${tempNode.location}")
-            for (node in prunedList) {
-                println("${node.location.posX}, ${node.location.posY}")
-                if (node.location.posX == goal.posX && node.location.posY == goal.posY) {
-                    nodesToProcess.clear()
-                    goalNode = node
+        val answers = mutableListOf<Int>()
+        for (startLocation in startLocations) {
+            nodes.clear()
+            nodesToProcess.clear()
+            visitedLocations.clear()
+            val start = Node(startLocation, null)
+            nodes.add(start)
+            nodesToProcess.add(start)
+            while (nodesToProcess.isNotEmpty()) {
+                val tempNode = nodesToProcess.removeFirst()
+                val list = tempNode.getChildren(locations, gridSize)
+                val prunedList = list.filter { !visitedLocations.contains(it.location) }
+                nodesToProcess.addAll(prunedList)
+                visitedLocations.addAll(list.map { it.location })
+                nodes.addAll(list)
+                for (node in prunedList) {
+                    if (node.location.posX == goal.posX && node.location.posY == goal.posY) {
+                        nodesToProcess.clear()
+                        goalNode = node
+                    }
                 }
             }
-        }
-        println("end")
-        var steps = 0
-        goalNode?.let {
-            var parent = it.parentNode
-            while (parent != null) {
-                steps++
-                parent = parent.parentNode
+            println("end")
+            var steps = 0
+            goalNode?.let {
+                var parent = it.parentNode
+                while (parent != null) {
+                    steps++
+                    parent = parent.parentNode
+                }
             }
+            println("answer $steps")
+            answers.add(steps)
+            visualize()
         }
-        println("answer $steps")
-        visualize()
+        answers.sort()
+        println(answers[0])
     }
 
     private fun visualize() {
